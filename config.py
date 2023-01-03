@@ -18,3 +18,21 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 
+# data preprocessing
+dataSets = "/home/mahdi/Desktop/project/dataset/kaggle_3m/*"
+num_epochs = 30 # number of training duration
+device = "cuda" if torch.cuda.is_available() else "cpu"
+batch_size = 64
+
+
+# set a seeds to use for some probable randomly works
+
+def set_seed(seed = 0):
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    
+set_seed()

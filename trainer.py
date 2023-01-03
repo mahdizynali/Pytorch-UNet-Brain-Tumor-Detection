@@ -75,7 +75,7 @@ def eval_loop(device, model, loader, loss_func, scheduler, training=True):
     return val_mean_dice, val_mean_loss
 
 
-def train_model(device, model, train_loader, val_loader, loss_func, optimizer, scheduler, num_epochs):
+def train_model(device, model, train_loader, val_loader, loss_func, optimizer, scheduler):
     train_loss_history = []
     train_dice_history = []
     val_loss_history = []
@@ -98,5 +98,4 @@ def train_model(device, model, train_loader, val_loader, loss_func, optimizer, s
                                                                                                                  train_mean_dice,
                                                                                                                  val_mean_dice))
         
-
     return train_loss_history, train_dice_history, val_loss_history, val_dice_history
