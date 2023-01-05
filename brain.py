@@ -1,7 +1,5 @@
 from config import *
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
 #==========================================================================
 class BrainDataset(Dataset):
     '''main class of deep learning to creat and manage final datasets'''
