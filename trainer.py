@@ -92,10 +92,8 @@ def train_model(device, model, train_loader, val_loader, loss_func, optimizer, s
         val_loss_history.append(val_mean_loss)
         val_dice_history.append(val_mean_dice)
         
-        print('Epoch: {}/{} |  Train Loss: {:.3f}, Val Loss: {:.3f}, Train DICE: {:.3f}, Val DICE: {:.3f}'.format(epoch+1, num_epochs,
-                                                                                                                 train_mean_loss,
-                                                                                                                 val_mean_loss,
-                                                                                                                 train_mean_dice,
-                                                                                                                 val_mean_dice))
+        print(f'\nEpoch step: {epoch+1}/{num_epochs}\nTrain Loss: {train_mean_loss:.3f}\nValidation Loss: {val_mean_loss:.3f}')
+        print(f'Train DICE: {train_mean_dice:.3f}\nValidation DICE: {val_mean_dice:.3f}\n')
+        print("="*50)
         
     return train_loss_history, train_dice_history, val_loss_history, val_dice_history
