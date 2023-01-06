@@ -101,7 +101,7 @@ class Plotter:
         plt.figtext(0.64,0.05,"Hot colormap", va="center", ha="center", size=20)
 
         # save and display
-        plt.savefig("/home/mahdi/Desktop/project/sampleData.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig("/home/mahdi/Desktop/ml/unet_mri_segmentation/sampleData.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
 
     #=======================================================================        
@@ -142,7 +142,7 @@ class Plotter:
         grid[2].axis('off')
 
         # save and display
-        plt.savefig("/home/mahdi/Desktop/project/samplePositive.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig("/home/mahdi/Desktop/ml/unet_mri_segmentation/samplePositive.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
 
     #=======================================================================
@@ -186,19 +186,20 @@ class Plotter:
         image = cv2.resize(cv2.imread(test_sample[1]), (128, 128))
         mask = cv2.resize(cv2.imread(test_sample[2]), (128, 128))
 
-        # pred
+        # prediction
         pred = torch.tensor(image.astype(np.float32) / 255.).unsqueeze(0).permute(0,3,1,2)
         pred = tt.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))(pred)
-        pred = model(pred.to(device))
-        pred = pred.detach().cpu().numpy()[0,0,:,:]
-
+        pred = model(pred.to(device)) 
+        pred = pred.detach().cpu().numpy()[0,0,:,:] # convert tensor to the numpy
+        
+        # tresholding
         pred_t = np.copy(pred)
         pred_t[np.nonzero(pred_t < 0.3)] = 0.0
         pred_t[np.nonzero(pred_t >= 0.3)] = 255.
         pred_t = pred_t.astype("uint8")
 
         # plot
-        fig, ax = plt.subplots(nrows=2,  ncols=2, figsize=(10, 10))
+        fig , ax = plt.subplots(nrows=2,  ncols=2, figsize=(10, 10))
 
         ax[0, 0].imshow(image)
         ax[0, 0].set_title("image")
@@ -209,4 +210,3 @@ class Plotter:
         ax[1, 1].imshow(pred_t)
         ax[1, 1].set_title("prediction with threshold")
         plt.show()
-    
