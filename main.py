@@ -47,7 +47,7 @@ def plotting ():
             Plotter(df).random_positive_patient(5)
             
         elif state == ('5'):
-            Plotter.plot_test_prediction(model, device, test, 19)  
+            Plotter.plot_test_prediction(model, device, test, 5)  
             
         else : exit(0)
 
@@ -63,7 +63,7 @@ for path in glob.glob(dataSets):
             addresses.extend([directoryName, image_path])
     except:
         print("Trouble to find directory !!\n\n")
-        
+ 
 #==============================================================   
     
 # now we creat a primier dataFrame with pandas and try to arange data 
@@ -87,7 +87,7 @@ def maskDiagnosis(mask_path):
         return 0 # there is not 
     
 df["status"] = df["mask_path"].apply(lambda status: maskDiagnosis(status))
-df.to_csv("/home/mahdi/Desktop/project/dataFrame.csv") # save data frame
+df.to_csv("/home/mahdi/Desktop/ml/unet_mri_segmentation/dataFrame.csv") # save data frame
 
 #==============================================================
 # now we split datasets into (Train - Validation - Test) in a radom form
@@ -130,7 +130,7 @@ test_dl = DataLoader(test_ds, batch_size, num_workers=2, pin_memory=True)
 #==============================================================
 # now creating a model and set it to the device (cpu or gpu)
 
-print("Creating model ...\n")
+print("Creating a model ...\n")
 model = UNet(3, 1).to(device)
 out = model(torch.randn(1, 3, 128, 128).to(device))
 print(f"Model size : {out.shape}\n\n")
@@ -147,14 +147,14 @@ while(True) :
     
     if state == ('1') :
         (train_loss_history, train_dice_history, val_loss_history, val_dice_history) = trainNewModel(model, optimizer, scheduler)
+        torch.save(model.state_dict(), 'model.pth')
         Plotter.plot_dice_history('UNET', train_dice_history, val_dice_history, num_epochs)
         Plotter.plot_loss_history('UNET', train_loss_history, val_loss_history, num_epochs)
-        torch.save(model.state_dict(), 'model.pth')
         plotting()
         
     elif state == ('2'):
         test_dice, test_loss = loadLastModel(model, scheduler)
-        print(f"Mean IoU/DICE: {(100*test_dice):.3f}%, Loss: {test_loss:.3f}\n\n")
+        print(f"\nMean IoU/DICE: {(100*test_dice):.3f}%, Loss: {test_loss:.3f}\n\n")
         plotting()
     
     else : exit(0)
