@@ -56,7 +56,7 @@ def eval_loop(device, model, loader, loss_func, scheduler, training=True):
             mask = mask.to(device)
     
             outputs = model(image)
-            loss = loss_func(outputs, mask)
+            loss = loss_func(outputs, mask).data.cpu().numpy()
             
             out_cut = np.copy(outputs.data.cpu().numpy())
             out_cut[np.nonzero(out_cut < 0.5)] = 0.0
@@ -91,7 +91,7 @@ def train_model(device, model, train_loader, val_loader, loss_func, optimizer, s
         train_dice_history.append(np.array(train_dices).mean())
         val_loss_history.append(val_mean_loss)
         val_dice_history.append(val_mean_dice)
-        
+
         print(f'\nEpoch step: {epoch+1}/{num_epochs}\nTrain Loss: {train_mean_loss:.3f}\nValidation Loss: {val_mean_loss:.3f}')
         print(f'Train DICE: {train_mean_dice:.3f}\nValidation DICE: {val_mean_dice:.3f}\n')
         print("="*50)
