@@ -34,14 +34,15 @@ class Plotter:
         
         # plt.show(block=False)
         # plt.pause(10) # uncommand to set automatic closing time
-        # plt.close()
+        
+        plt.savefig(file_path + "png/status.png", bbox_inches='tight', pad_inches=0.2, transparent=False)# plt.close()
         plt.show()
     #=======================================================================
     
     def plot_Status_Distribution (self) :
         '''plotting distributed tumor's status between existed directories'''
         
-        status = self.frame.groupby(['directory', 'status'])['status'].size().unstack().fillna(0)
+        status = self.frame.groupby(['image_path', 'status'])['status'].size().unstack().fillna(0)
         status.columns = ["Positive", "Negative"]
         # Plot
         ax = status.plot(kind='bar',stacked=True,
@@ -52,6 +53,7 @@ class Plotter:
         ax.set_xlabel('Patients',fontsize = 20)
         ax.set_ylabel('Total Images', fontsize = 20)
         ax.set_title("Plotting tumor's status distribution between existed directories",fontsize = 25, y=1.005)
+        plt.savefig(file_path + "png/distribution.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
         
     #=======================================================================
@@ -101,7 +103,7 @@ class Plotter:
         plt.figtext(0.64,0.05,"Hot colormap", va="center", ha="center", size=20)
 
         # save and display
-        plt.savefig(file_path + "sampleData.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig(file_path + "png/sampleData.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
 
     #=======================================================================        
@@ -115,8 +117,8 @@ class Plotter:
         imgs = []
         for i, data in enumerate(sample_df):
             #print(data)
-            img = cv2.resize(cv2.imread(data[1]), (self.scale, self.scale))
-            mask = cv2.resize(cv2.imread(data[2]), (self.scale, self.scale))
+            img = cv2.resize(cv2.imread(data[0]), (self.scale, self.scale))
+            mask = cv2.resize(cv2.imread(data[1]), (self.scale, self.scale))
             imgs.extend([img, mask])
 
         # save images into a matrix for displaying
@@ -142,7 +144,7 @@ class Plotter:
         grid[2].axis('off')
 
         # save and display
-        plt.savefig(file_path + "samplePositive.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig(file_path + "png/samplePositive.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
 
     #=======================================================================
@@ -159,7 +161,7 @@ class Plotter:
         plt.xlabel("Epoch", fontsize=15)
         plt.ylabel("DICE", fontsize=15)
         
-        plt.savefig(file_path + "dice_history.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig(file_path + "png/dice_history.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
          
     #=======================================================================
@@ -177,7 +179,7 @@ class Plotter:
         plt.xlabel("Epoch", fontsize=15)
         plt.ylabel("Loss", fontsize=15)
         
-        plt.savefig(file_path + "loss_history.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig(file_path + "png/loss_history.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
     #=======================================================================
     def plot_test_prediction (model, device, test, sample):
@@ -185,8 +187,8 @@ class Plotter:
         
         test_sample = test[test["status"] == 1].values[sample]
 
-        image = cv2.resize(cv2.imread(test_sample[1]), (128, 128))
-        mask = cv2.resize(cv2.imread(test_sample[2]), (128, 128))
+        image = cv2.resize(cv2.imread(test_sample[0]), (128, 128))
+        mask = cv2.resize(cv2.imread(test_sample[1]), (128, 128))
 
         # prediction
         pred = torch.tensor(image.astype(np.float32) / 255.).unsqueeze(0).permute(0,3,1,2)
@@ -211,5 +213,7 @@ class Plotter:
         ax[1, 0].set_title("prediction")
         ax[1, 1].imshow(pred_t)
         ax[1, 1].set_title("prediction with threshold")
+        
+        plt.savefig(file_path + "png/random_pridict.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
     
