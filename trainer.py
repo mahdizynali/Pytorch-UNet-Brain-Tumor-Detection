@@ -50,6 +50,7 @@ def eval_loop(device, model, loader, loss_func, scheduler, training=True):
     model.eval()
     val_loss = 0
     val_dice = 0
+
     with torch.no_grad():
         for step, (image, mask) in enumerate(loader):
             image = image.to(device)
@@ -62,7 +63,9 @@ def eval_loop(device, model, loader, loss_func, scheduler, training=True):
             out_cut[np.nonzero(out_cut < 0.5)] = 0.0
             out_cut[np.nonzero(out_cut >= 0.5)] = 1.0
             dice = dice_coef_metric(out_cut, mask.data.cpu().numpy())
-            
+
+            #accuracy
+ 
             val_loss += loss
             val_dice += dice
         

@@ -101,7 +101,7 @@ class Plotter:
         plt.figtext(0.64,0.05,"Hot colormap", va="center", ha="center", size=20)
 
         # save and display
-        plt.savefig("/home/mahdi/Desktop/ml/unet_mri_segmentation/sampleData.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig(file_path + "sampleData.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
 
     #=======================================================================        
@@ -142,7 +142,7 @@ class Plotter:
         grid[2].axis('off')
 
         # save and display
-        plt.savefig("/home/mahdi/Desktop/ml/unet_mri_segmentation/samplePositive.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
+        plt.savefig(file_path + "samplePositive.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
 
     #=======================================================================
@@ -158,7 +158,8 @@ class Plotter:
         plt.legend(fontsize=12)
         plt.xlabel("Epoch", fontsize=15)
         plt.ylabel("DICE", fontsize=15)
-
+        
+        plt.savefig(file_path + "dice_history.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
          
     #=======================================================================
@@ -175,7 +176,8 @@ class Plotter:
         plt.legend(fontsize=12)
         plt.xlabel("Epoch", fontsize=15)
         plt.ylabel("Loss", fontsize=15)
-
+        
+        plt.savefig(file_path + "loss_history.png", bbox_inches='tight', pad_inches=0.2, transparent=False)
         plt.show()
     #=======================================================================
     def plot_test_prediction (model, device, test, sample):
@@ -210,3 +212,4 @@ class Plotter:
         ax[1, 1].imshow(pred_t)
         ax[1, 1].set_title("prediction with threshold")
         plt.show()
+    

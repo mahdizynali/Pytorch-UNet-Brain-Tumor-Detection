@@ -4,10 +4,8 @@ from trainer import *
 from brain import *
 
 '''
-
 Before running the program, you have to make sure that every moduls are installed
 and change program's directories to read and save data
-
 '''
 
 def trainNewModel (model, optimizer, scheduler):
@@ -16,7 +14,8 @@ def trainNewModel (model, optimizer, scheduler):
     
 def loadLastModel (model, scheduler):
     '''load trained model and test prediction'''
-    model.load_state_dict(torch.load('model.pth'))
+    model.load_state_dict(torch.load(file_path + 'model.pth')) 
+    # model.load_state_dict(torch.load('model.pth',map_location=torch.device('cpu'))) # to use with cpu only
     return eval_loop(device, model, test_dl, bce_dice_loss, scheduler, training=False)
 
 def plotting ():
@@ -54,48 +53,28 @@ def plotting ():
 #========================================================================== 
  # in this case we try to extract the path of data sets
 print("\n\nGathering dataSets...\n") 
-addresses = []
-for path in glob.glob(dataSets):
-    try:
-        directoryName = path.split("/")[-1] # get name of files
-        for imgName in os.listdir(path):
-            image_path = (path + "/" + imgName)
-            addresses.extend([directoryName, image_path])
-    except:
-        print("Trouble to find directory !!\n\n")
- 
-#==============================================================   
-    
-# now we creat a primier dataFrame with pandas and try to arange data 
-df = pd.DataFrame({"directory" : addresses[::2], "path" : addresses[1::2]})
-# spliting images from masks
-df_images = df[~df["path"].str.contains("mask")]
-df_masks = df[df["path"].str.contains("mask")]
-# sorting each data set to specific mask
-images = sorted(df_images["path"].values, key=lambda x : (x[89:-4]))
-masks = sorted(df_masks["path"].values, key=lambda x : (x[89:-9]))
-# After sorting data, now we creat final dataFrame
-df = pd.DataFrame({"directory": df_images["directory"], "image_path": images, "mask_path": masks})
 
-#==============================================================
-# spliting data if there is any diagnosted mask or not 
-def maskDiagnosis(mask_path):
-    value = np.max(cv2.imread(mask_path)) # color black = 0 & color white = 255
-    if value > 0 :
-        return 1 # there is a mask of shape
-    else: 
-        return 0 # there is not 
-    
-df["status"] = df["mask_path"].apply(lambda status: maskDiagnosis(status))
-df.to_csv("/home/mahdi/Desktop/ml/unet_mri_segmentation/dataFrame.csv") # save data frame
+mask_files = glob.glob(file_path + "dataSets/" + '*/*_mask*')
+image_files = [file.replace('_mask', '') for file in mask_files]
+
+def diagnosis(mask_path):
+    return 1 if np.max(cv2.imread(mask_path)) > 0 else 0
+
+df = pd.DataFrame({"image_path": image_files,
+                  "mask_path": mask_files,
+                  "status": [diagnosis(x) for x in mask_files]})
+
+df.to_csv(file_path + "dataFrame.csv") # save data frame
 
 #==============================================================
 # now we split datasets into (Train - Validation - Test) in a radom form
 train, validation = train_test_split(df, stratify=df['status'], test_size=0.1, random_state=0)
 train = train.reset_index(drop=True)
 validation = validation.reset_index(drop=True)
+
 train, test = train_test_split(train, stratify=train['status'], test_size=0.15, random_state=0)
 train = train.reset_index(drop=True)
+test = test.reset_index(drop=True)
 
 print(f"Train : {train.shape}\nValidation : {validation.shape}\nTest : {test.shape}\n\n")
 
@@ -147,12 +126,14 @@ while(True) :
     
     if state == ('1') :
         (train_loss_history, train_dice_history, val_loss_history, val_dice_history) = trainNewModel(model, optimizer, scheduler)
-        torch.save(model.state_dict(), 'model.pth')
+        torch.save(model.state_dict(), file_path + 'model.pth')
+        print("\n\n\nAccuracy of trained model is : ", train_dice_history * 100 , " %\n\n")
         Plotter.plot_dice_history('UNET', train_dice_history, val_dice_history, num_epochs)
         Plotter.plot_loss_history('UNET', train_loss_history, val_loss_history, num_epochs)
         plotting()
         
     elif state == ('2'):
+        print("\ntesting data on previous model ...\n")
         test_dice, test_loss = loadLastModel(model, scheduler)
         print(f"\nMean IoU/DICE: {(100*test_dice):.3f}%, Loss: {test_loss:.3f}\n\n")
         plotting()

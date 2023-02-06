@@ -19,7 +19,9 @@ from tqdm import tqdm
 
 
 # data preprocessing
-dataSets = "/home/mahdi/Desktop/project/dataset/kaggle_3m/*"
+file_path = os.path.dirname(__file__) + "/"
+dataSets = file_path + "dataSets/*"
+
 num_epochs = 30 # number of training duration
 device = "cuda" if torch.cuda.is_available() else "cpu"
 batch_size = 64

@@ -15,9 +15,9 @@ class BrainDataset(Dataset):
     def __getitem__(self, idx):
         '''gathering data from dataFrame'''
         
-        image = cv2.imread(self.df.iloc[idx, 1])
+        image = cv2.imread(self.df.iloc[idx, 0])
         image = np.array(image) / 255.
-        mask = cv2.imread(self.df.iloc[idx, 2], 0)
+        mask = cv2.imread(self.df.iloc[idx, 1], 0)
         mask = np.array(mask) / 255.
         
         if self.transform != None : 
