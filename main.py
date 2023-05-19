@@ -1,3 +1,6 @@
+# Authored By Mahdi Zeinali
+# github : github.com/mahdizynali
+
 from config import *
 from plotter import *
 from trainer import *
